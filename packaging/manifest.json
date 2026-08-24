@@ -1,0 +1,74 @@
+{
+  "manifest_version": "0.3",
+  "name": "mcp-rule34",
+  "display_name": "Rule 34",
+  "version": "0.1.0",
+  "description": "MCP server for rule34.xxx. Search posts by tag through the site's own API. Requires a rule34.xxx API key.",
+  "long_description": "Search rule34.xxx by one tag or several at once, ask for images, animations or video, and get each post's page, file, dimensions, score, rating and tags, with the total for the whole search. Requires the API key rule34.xxx issues per account.",
+  "author": {
+    "name": "Damien Bouissou",
+    "url": "https://github.com/smeet666"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smeet666/mcp-rule34.git"
+  },
+  "homepage": "https://github.com/smeet666/mcp-rule34#readme",
+  "documentation": "https://github.com/smeet666/mcp-rule34#readme",
+  "support": "https://github.com/smeet666/mcp-rule34/issues",
+  "icon": "assets/icon-512.png",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "modelcontextprotocol",
+    "model-context-protocol",
+    "mcp-server",
+    "rule34",
+    "booru",
+    "tags",
+    "image-search"
+  ],
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"],
+      "env": {
+        "RULE34_USER_ID": "${user_config.user_id}",
+        "RULE34_API_KEY": "${user_config.api_key}"
+      }
+    }
+  },
+  "user_config": {
+    "user_id": {
+      "type": "string",
+      "title": "rule34.xxx user id",
+      "description": "The numeric id shown under API Access Credentials on your account options page.",
+      "required": true
+    },
+    "api_key": {
+      "type": "string",
+      "title": "rule34.xxx API key",
+      "description": "The key shown under API Access Credentials. The site issues one per person.",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "tools": [
+    {
+      "name": "search_posts",
+      "description": "Find posts carrying a tag, or several tags at once."
+    },
+    {
+      "name": "get_post",
+      "description": "Read one post whole, with a kind for every tag."
+    }
+  ],
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=20.0.0"
+    }
+  }
+}

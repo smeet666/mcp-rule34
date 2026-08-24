@@ -1,0 +1,84 @@
+{
+  "name": "mcp-rule34",
+  "version": "0.1.0",
+  "description": "MCP server for rule34.xxx. Search posts by tag through the site's own API.",
+  "type": "module",
+  "license": "MIT",
+  "author": "smeet666",
+  "homepage": "https://github.com/smeet666/mcp-rule34#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smeet666/mcp-rule34.git"
+  },
+  "bugs": {
+    "url": "https://github.com/smeet666/mcp-rule34/issues"
+  },
+  "funding": {
+    "type": "buymeacoffee",
+    "url": "https://buymeacoffee.com/smeet666"
+  },
+  "mcpName": "io.github.smeet666/mcp-rule34",
+  "bin": {
+    "mcp-rule34": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/rule34/client.d.ts",
+      "import": "./dist/rule34/client.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "server.json"
+  ],
+  "engines": {
+    "node": ">=20.18.1"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run test/unit",
+    "test:live": "vitest run test/live --testTimeout=60000",
+    "format": "biome check --write && prettier --write \"**/*.{md,yml}\"",
+    "check": "biome ci && prettier --check \"**/*.{md,yml}\"",
+    "prepublishOnly": "npm run typecheck && npm run test && npm run build",
+    "start": "node dist/index.js",
+    "inspector": "npx @modelcontextprotocol/inspector node dist/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "modelcontextprotocol",
+    "model-context-protocol",
+    "mcp-server",
+    "rule34",
+    "booru",
+    "tags",
+    "images",
+    "search",
+    "claude",
+    "cursor",
+    "llm",
+    "ai"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "fast-xml-parser": "^5.2.5",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.9",
+    "@types/node": "^22.10.2",
+    "prettier": "3.9.6",
+    "tsup": "^8.5.1",
+    "typescript": "^5.7.2",
+    "vitest": "^4.1.10"
+  }
+}
