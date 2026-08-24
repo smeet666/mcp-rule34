@@ -29,8 +29,8 @@ export function parseTagSuggestions(body: string, url: string): TagSuggestion[] 
   let parsed: unknown;
   try {
     parsed = JSON.parse(body);
-  } catch {
-    throw parseFailure(safeUrl, "the response is not JSON");
+  } catch (error) {
+    throw parseFailure(safeUrl, "the response is not JSON", error);
   }
 
   if (!Array.isArray(parsed)) {

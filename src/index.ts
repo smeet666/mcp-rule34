@@ -16,7 +16,12 @@ async function main(): Promise<void> {
   await server.connect(transport);
 
   const shutdown = () => {
-    void server.close().finally(() => process.exit(0));
+    // The close is attempted, and a close that fails changes nothing: the
+    // process leaves on either path.
+    server
+      .close()
+      .catch(() => undefined)
+      .finally(() => process.exit(0));
   };
   process.on("SIGINT", shutdown);
   process.on("SIGTERM", shutdown);

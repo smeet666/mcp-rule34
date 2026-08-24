@@ -28,16 +28,20 @@ export class Rule34Error extends Error {
     readonly code: ErrorCode,
     text: string,
     readonly details: ErrorDetails = {},
+    options?: ErrorOptions,
   ) {
-    super(`[${code}] ${text}`);
+    // The message a caller reads says what this server could not do. The error
+    // that led there is kept as the cause, where a maintainer reading a stack
+    // finds it and a caller never has to.
+    super(`[${code}] ${text}`, options);
     this.name = "Rule34Error";
   }
 }
 
 const ISSUES_URL = "https://github.com/smeet666/mcp-rule34/issues";
 
-export function invalidInput(message: string, hint?: string): Rule34Error {
-  return new Rule34Error("invalid_input", message, hint ? { hint } : {});
+export function invalidInput(message: string, hint?: string, cause?: unknown): Rule34Error {
+  return new Rule34Error("invalid_input", message, hint ? { hint } : {}, { cause });
 }
 
 /**
@@ -93,11 +97,12 @@ export function rateLimited(url: string, retryAfterMs: number): Rule34Error {
   );
 }
 
-export function parseFailure(url: string, what: string): Rule34Error {
+export function parseFailure(url: string, what: string, cause?: unknown): Rule34Error {
   return new Rule34Error(
     "parse_failure",
     `The request was answered, but not with the document this route publishes (${what}).`,
     { url, hint: `Please report this, with the query you used, at ${ISSUES_URL}` },
+    { cause },
   );
 }
 

@@ -4,6 +4,22 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 follows [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-08-24
+
+### Added
+
+- Every error carries the error that led to it as its `cause`. A caller still
+  reads what this server could not do; a maintainer reading a stack finds the
+  parse or URL failure underneath.
+
+### Changed
+
+- The lint configuration matches the one the rest of the collection runs, which
+  is sixty-three rules wider. Reading two repositories the same way is worth
+  more than either set of rules.
+- Shutdown closes the server without discarding the promise, and leaves the
+  process on either path.
+
 ## [1.0.0] - 2026-08-24
 
 ### Added

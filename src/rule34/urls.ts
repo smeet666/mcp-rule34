@@ -228,10 +228,11 @@ export function readPostPageUrl(raw: string): number {
   let parsed: URL;
   try {
     parsed = new URL(raw.trim());
-  } catch {
+  } catch (error) {
     throw invalidInput(
       `"${raw}" is not a URL.`,
       "Pass a link to a post's page, such as https://rule34.xxx/index.php?page=post&s=view&id=2195419",
+      error,
     );
   }
 
@@ -255,7 +256,7 @@ export function readPostPageUrl(raw: string): number {
   // A query may carry `id` more than once, and reading the first would be a
   // coin flip on which post the caller meant. Two different values are the
   // contradiction an `id` and a `url` that disagree are refused for.
-  const named = [...new Set(parsed.searchParams.getAll("id"))];
+  const named: string[] = [...new Set(parsed.searchParams.getAll("id"))];
   if (named.length > 1) {
     throw invalidInput(
       `"${raw}" names ${named.length} different posts: ${named.join(", ")}.`,
@@ -263,7 +264,7 @@ export function readPostPageUrl(raw: string): number {
     );
   }
 
-  const written = named[0] ?? "";
+  const written: string = named[0] ?? "";
   if (written === "") {
     throw invalidInput(`"${raw}" carries no post id.`);
   }

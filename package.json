@@ -1,6 +1,6 @@
 {
   "name": "mcp-rule34",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "MCP server for rule34.xxx. Search posts by tag through the site's own API.",
   "type": "module",
   "license": "MIT",

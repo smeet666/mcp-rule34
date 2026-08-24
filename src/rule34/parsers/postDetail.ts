@@ -39,8 +39,8 @@ export function parsePostDetail(body: string, url: string, id: number): PostDeta
   let parsed: unknown;
   try {
     parsed = JSON.parse(body);
-  } catch {
-    throw parseFailure(safeUrl, "the response is not JSON");
+  } catch (error) {
+    throw parseFailure(safeUrl, "the response is not JSON", error);
   }
 
   // An unauthenticated request is answered with HTTP 200 and a bare string,
