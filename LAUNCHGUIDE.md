@@ -40,7 +40,8 @@ variables. The site issues one key per person, and this server ships none.
 - A search row shows the first twelve tags of a post and states how many it
   carries in all; get_post reads the whole list, with a kind for every tag
 - A rating the site does not hold is refused rather than answered with nothing
-- An empty search of several tags names the tag that does not exist
+- An empty search names the tag that does not exist, and offers the names the
+  site does hold that begin like it
 - Rate limiting is reported as rate limiting, never as an absence of results
 - One request at a time, a second apart, and no configuration can make it faster
 - The API key never appears in a message, a log line or a cache key
@@ -56,7 +57,8 @@ variables. The site issues one key per person, and this server ships none.
 - Tool: search_posts — Finds posts carrying a tag or several at once, and
   returns each post's page, file, dimensions, score and rating
 - Tool: get_post — Reads one post whole, with a kind and a post count for every
-  tag, the uploader, the comments and the publication date
+  tag, the uploader, the comments and the date the site took it in
+- Tool: find_tags — Finds how the site spells a tag, and how many posts carry it
 
 ## Keywords
 

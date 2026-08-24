@@ -11,6 +11,13 @@ import { z } from "zod";
 import type { Config, Logger } from "./config.js";
 import { createLogger, loadConfig } from "./config.js";
 import { Rule34Client } from "./rule34/client.js";
+import type { FindTagsArgs } from "./tools/findTags.js";
+import {
+  findTagsDescription,
+  findTagsInput,
+  findTagsOutputShape,
+  runFindTags,
+} from "./tools/findTags.js";
 import type { GetPostArgs } from "./tools/getPost.js";
 import {
   getPostDescription,
@@ -60,7 +67,8 @@ export function createServer(options: CreateServerOptions = {}): McpServer {
         "as 'asuka langley sohryu', is one tag, and the tools join it for you. The site holds two ratings, " +
         "'questionable' and 'explicit'; asking for anything else is refused rather than answered with nothing. " +
         "Typical flow: search_posts to find posts by tag, then get_post with an id for one post's whole tag " +
-        "list, since a search row shows only its first few tags. " +
+        "list, since a search row shows only its first few tags. When a name might be spelled otherwise, or " +
+        "when a search found nothing because a tag does not exist, find_tags says how the site spells it. " +
         "A 'rate_limited' error means the site is refusing this client for now, not that a search found " +
         "nothing. When you show a post to a user, link its rule34.xxx page.",
     },
@@ -90,6 +98,18 @@ export function createServer(options: CreateServerOptions = {}): McpServer {
       annotations: READ_ONLY,
     },
     async (args) => runGetPost(client, args as GetPostArgs),
+  );
+
+  server.registerTool(
+    "find_tags",
+    {
+      title: "Find how a tag is spelled",
+      description: findTagsDescription,
+      inputSchema: findTagsInput,
+      outputSchema: z.object(findTagsOutputShape),
+      annotations: READ_ONLY,
+    },
+    async (args) => runFindTags(client, args as FindTagsArgs),
   );
 
   logger.info(

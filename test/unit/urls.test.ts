@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { Rule34Error } from "../../src/errors.js";
 import {
   buildPostPageUrl,
+  buildTagSuggestUrl,
   buildPostSearchUrl,
   buildSearchQuery,
   buildTagLookupUrl,
@@ -219,6 +220,28 @@ describe("redactCredentials", () => {
     // The user id identifies the account without unlocking it, and leaving it
     // readable keeps a support question answerable.
     expect(shown).toContain("user_id=6701429");
+  });
+});
+
+describe("buildTagSuggestUrl", () => {
+  it("asks the suggestion route, which needs no credentials", () => {
+    // The site publishes this route on its API host and answers it without a
+    // key, so none is sent and none appears in the address.
+    const url = buildTagSuggestUrl("orange road");
+    expect(url).toBe("https://api.rule34.xxx/autocomplete.php?q=orange_road");
+    expect(url).not.toContain("api_key");
+    expect(url).not.toContain("user_id");
+  });
+
+  it("writes the text the way a tag is spelled", () => {
+    expect(buildTagSuggestUrl("Kimagure Orange")).toContain("q=kimagure_orange");
+    expect(buildTagSuggestUrl("ranma 1/2")).toContain("q=ranma_1%2F2");
+  });
+
+  it("refuses a search for nothing", () => {
+    // The site answers an empty query with the tags it holds most of, which is
+    // an answer to a question nobody asked.
+    expect(() => buildTagSuggestUrl("   ")).toThrow(/invalid_input/);
   });
 });
 

@@ -76,10 +76,23 @@ it knows the site will refuse.
 
 ## Tools
 
-| Tool           | What it does                                     | Key parameters                                                               |
-| -------------- | ------------------------------------------------ | ---------------------------------------------------------------------------- |
-| `search_posts` | Finds posts carrying a tag, or several at once.  | `tags`, `any_of`, `exclude`, `media_type`, `rating`, `sort`, `limit`, `page` |
-| `get_post`     | Reads one post whole, with a kind for every tag. | `id`, `url`                                                                  |
+| Tool           | What it does                                                  | Key parameters                                                               |
+| -------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `search_posts` | Finds posts carrying a tag, or several at once.               | `tags`, `any_of`, `exclude`, `media_type`, `rating`, `sort`, `limit`, `page` |
+| `get_post`     | Reads one post whole, with a kind for every tag.              | `id`, `url`                                                                  |
+| `find_tags`    | Finds how the site spells a tag, and how many posts carry it. | `query`                                                                      |
+
+### Finding how a tag is spelled
+
+`find_tags` asks rule34.xxx which names begin with a piece of text, and how many
+posts each one carries. It matches from the start of a name, so `kimagure` finds
+`kimagure_orange_road` while a word sitting in the middle of a name finds
+nothing. The site offers at most ten names and the answer says so, since ten
+back means the list was cut rather than exhausted.
+
+This is also what a search that found nothing falls back on: when a required tag
+does not exist, the answer names it and offers the names the site does hold that
+begin like it.
 
 ### A search names posts, a post is then read whole
 
@@ -91,12 +104,12 @@ first twelve and states how many the post carries in all.
 `get_post` reads one post by its id, or by a link to its page, and returns every
 tag with its kind, character, copyright, artist, general or metadata, and how
 many posts share it, alongside the uploader, the number of comments and the
-publication date. A link is read rather than followed: this server builds its
+date the site took it in. A link is read rather than followed: this server builds its
 own request from the id it finds in it.
 
 Reading one post costs two requests, because neither format the API publishes
-carries everything: the publication date comes from one, and the uploader's
-name, the comment count and the tag kinds from the other.
+carries everything: the date the site took the post in comes from one, and the
+uploader's name, the comment count and the tag kinds from the other.
 
 ### Tags are single tokens
 
@@ -156,11 +169,13 @@ Every answer carries the total the site counted for the whole search, the page
 that was served, and the search as it was sent in the site's own language. A
 post carries its rule34.xxx page, its file, its thumbnail, its dimensions, its
 score, its rating, its tags, whatever the uploader credited as a source, and the
-date it was published.
+date rule34.xxx took it in.
 
-Two dates exist on a post and only one of them is publication: a post first
-uploaded in 2016 and retagged last spring carries both, and this server reports
-the first.
+A post carries two dates, and neither one is when its subject was made. The
+first is the day the site took the post in, the second the day the post last
+changed, which retagging moves. rule34.xxx imported much of its older catalogue
+in bulk, so thousands of posts share one day in November 2010: a question about
+what came first is answered by the import, not by the work.
 
 ## What this server does not do
 
@@ -281,10 +296,23 @@ une requête dont il sait que le site la refusera.
 
 ## Les outils
 
-| Outil          | Ce qu'il fait                                              | Paramètres principaux                                                        |
-| -------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `search_posts` | Trouve les posts portant un tag, ou plusieurs.             | `tags`, `any_of`, `exclude`, `media_type`, `rating`, `sort`, `limit`, `page` |
-| `get_post`     | Lit un post en entier, avec le type de chacun de ses tags. | `id`, `url`                                                                  |
+| Outil          | Ce qu'il fait                                                        | Paramètres principaux                                                        |
+| -------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `search_posts` | Trouve les posts portant un tag, ou plusieurs.                       | `tags`, `any_of`, `exclude`, `media_type`, `rating`, `sort`, `limit`, `page` |
+| `get_post`     | Lit un post en entier, avec le type de chacun de ses tags.           | `id`, `url`                                                                  |
+| `find_tags`    | Trouve comment le site écrit un tag, et combien de posts le portent. | `query`                                                                      |
+
+### Trouver comment un tag s'écrit
+
+`find_tags` demande à rule34.xxx quels noms commencent par un texte, et combien
+de posts chacun porte. La correspondance part du début d'un nom, donc `kimagure`
+trouve `kimagure_orange_road` là où un mot situé au milieu d'un nom ne trouve
+rien. Le site propose au plus dix noms et la réponse le dit, puisque dix en
+retour signifie une liste coupée plutôt qu'épuisée.
+
+C'est aussi le repli d'une recherche qui n'a rien trouvé : quand un tag requis
+n'existe pas, la réponse le nomme et propose les noms que le site détient et qui
+commencent comme lui.
 
 ### La recherche nomme les posts, la fiche les lit en entier
 
@@ -297,12 +325,13 @@ au total.
 `get_post` lit un post par son identifiant, ou par un lien vers sa page, et rend
 chaque tag avec son type, personnage, copyright, artiste, général ou métadonnée,
 et le nombre de posts qui le partagent, avec le déposant, le nombre de
-commentaires et la date de publication. Un lien est lu et non suivi : ce serveur
+commentaires et la date à laquelle le site l'a pris. Un lien est lu et non suivi : ce serveur
 construit sa propre requête à partir de l'identifiant qu'il y trouve.
 
 Lire une fiche coûte deux requêtes, parce qu'aucun des deux formats publiés par
-l'API ne porte tout : la date de publication vient de l'un, et le nom du
-déposant, le nombre de commentaires et les types de tags viennent de l'autre.
+l'API ne porte tout : la date à laquelle le site a pris le post vient de l'un,
+et le nom du déposant, le nombre de commentaires et les types de tags viennent
+de l'autre.
 
 ### Un tag est un seul mot
 
@@ -357,11 +386,14 @@ Chaque réponse porte le total compté par le site pour la recherche entière, l
 page servie, et la requête telle qu'elle a été envoyée dans le langage du site.
 Un post porte sa page rule34.xxx, son fichier, sa vignette, ses dimensions, son
 score, sa classification, ses tags, la source créditée par le déposant quand il
-en a crédité une, et sa date de publication.
+en a crédité une, et la date à laquelle rule34.xxx l'a pris.
 
-Un post porte deux dates et une seule est la publication : une image déposée en
-2016 et retaguée au printemps dernier porte les deux, et ce serveur rend la
-première.
+Un post porte deux dates, et aucune n'est celle où son sujet a été fait. La
+première est le jour où le site a pris le post, la seconde le jour où il a
+changé pour la dernière fois, que le retaguage déplace. rule34.xxx a importé en
+masse une grande partie de son fonds ancien, donc des milliers de posts portent
+un même jour de novembre 2010 : une question sur ce qui vient en premier est
+répondue par l'import, jamais par l'œuvre.
 
 ## Ce que ce serveur ne fait pas
 

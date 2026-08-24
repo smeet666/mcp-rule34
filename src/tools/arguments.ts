@@ -38,8 +38,12 @@ export function wholeNumber(argument: string, min: number, max: number): z.ZodNu
 }
 
 export function tagName(argument: string, most: number): z.ZodString {
-  const error = `${CODE} ${argument} takes a tag name, at most ${most} characters. Written empty it narrows nothing.`;
-  return z.string({ error }).trim().min(1, error).max(most, error);
+  // Two causes, two messages: a name written empty and a name written long are
+  // different mistakes, and one message for both sends half the callers
+  // counting characters they never wrote.
+  const empty = `${CODE} ${argument} takes a tag name. Written empty, spaces alone included, it narrows nothing.`;
+  const long = `${CODE} ${argument} takes a tag name of at most ${most} characters.`;
+  return z.string({ error: empty }).trim().min(1, empty).max(most, long);
 }
 
 export function tagNames(argument: string, least: number, most: number): z.ZodArray<z.ZodString> {

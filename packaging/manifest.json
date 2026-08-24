@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "mcp-rule34",
   "display_name": "Rule 34",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "MCP server for rule34.xxx. Search posts by tag through the site's own API. Requires a rule34.xxx API key.",
   "long_description": "Search rule34.xxx by one tag or several at once, ask for images, animations or video, and get each post's page, file, dimensions, score, rating and tags, with the total for the whole search. Requires the API key rule34.xxx issues per account.",
   "author": {
@@ -63,6 +63,10 @@
     {
       "name": "get_post",
       "description": "Read one post whole, with a kind for every tag."
+    },
+    {
+      "name": "find_tags",
+      "description": "Find how rule34.xxx spells a tag, and how many posts carry it."
     }
   ],
   "compatibility": {

@@ -64,7 +64,11 @@ export const searchPostsInput = strictInput({
     .describe("The two ratings rule34.xxx holds. Leave unset to search both."),
   sort: choice("sort", ["score", "id", "updated", "random"], "The order the site sorts by.")
     .default("score")
-    .describe("'score' is the site's own, updated once a day. 'id' is newest first."),
+    .describe(
+      "'score' is the site's own tally of votes, recomputed once a day. 'id' is newest first. " +
+        "'updated' is by when a post last changed, which retagging moves. 'random' draws a " +
+        "different set on each call.",
+    ),
   limit: wholeNumber("limit", 1, 100).default(20),
   page: wholeNumber("page", 1, MAX_PAGE).default(1),
 });
@@ -108,22 +112,50 @@ function toSearch(args: SearchPostsArgs): PostSearch {
 }
 
 /**
- * What to say about the posts past this page.
+ * The last page this search fills at the limit asked for.
  *
- * The sentence may only name a page the schema would accept, or it sends a
- * caller into an argument that is refused.
+ * A search that found nothing fills the one page it was asked on, so that a
+ * page beyond the end is told apart from a search with nothing in it.
  */
-function whatFollowsThisPage(hasMore: boolean, page: number): string {
-  if (!hasMore) {
-    return "";
-  }
-  if (page < MAX_PAGE) {
-    return `\n\nMore posts match: call again with page=${page + 1}.`;
-  }
-  return `\n\nrule34.xxx holds more, and page ${MAX_PAGE} is as far as this tool reads. Narrow the search instead.`;
+function lastPageOf(total: number, limit: number): number {
+  return total === 0 ? 1 : Math.ceil(total / limit);
+}
+
+/** The next step, when there is one the schema would accept. */
+function whatFollowsThisPage(nextPage: number | null): string {
+  return nextPage === null ? "" : `\n\nMore posts match: call again with page=${nextPage}.`;
 }
 
 const quoted = (tags: string[]): string => tags.map((tag) => `'${tag}'`).join(", ");
+
+/**
+ * The opening of a misspelled name, which is the part worth asking about.
+ *
+ * The suggestion route matches from the start of a name, so a misspelled name
+ * asked in full matches nothing. A slip usually lands late enough that the
+ * opening survives it, and the opening is what finds the name that was meant.
+ */
+function openingOf(name: string): string {
+  return name.slice(0, Math.max(3, Math.floor(name.length * 0.6)));
+}
+
+/**
+ * Names the site offers that begin like the one it does not hold.
+ *
+ * A suggestion that cannot be fetched is a suggestion not made: the tag that is
+ * missing is already named, and a failure here must not replace that answer.
+ */
+async function namesLike(client: Rule34Client, unknown: string): Promise<string> {
+  try {
+    const { data } = await client.findTags(openingOf(unknown));
+    const offered = data
+      .slice(0, 3)
+      .map((tag) => `'${tag.name}'${tag.postCount === null ? "" : ` (${tag.postCount} posts)`}`);
+    return offered.length === 0 ? "" : ` It does offer ${offered.join(", ")}.`;
+  } catch {
+    return "";
+  }
+}
 
 /** The arguments that narrow a search, named as a caller passed them. */
 function restrictionsIn(args: SearchPostsArgs): string[] {
@@ -163,10 +195,13 @@ async function explainEmptySearch(client: Rule34Client, args: SearchPostsArgs): 
   const unknownAlternatives =
     alternatives.length > 0 ? await client.findUnknownTags(alternatives) : [];
 
-  if (unknownRequired.length > 0) {
+  const [firstUnknown] = unknownRequired;
+  if (firstUnknown !== undefined) {
+    const near = await namesLike(client, firstUnknown);
     return [
       `rule34.xxx holds no tag named ${quoted(unknownRequired)}. ` +
-        "A tag a search requires and the site does not hold empties that search on its own.",
+        "A tag a search requires and the site does not hold empties that search on its own." +
+        near,
     ];
   }
 
@@ -209,7 +244,10 @@ export async function runSearchPosts(
       notes.push("Served from this server's short-lived in-memory cache.");
     }
 
-    const posts = data.posts.map(toPostOut);
+    // A row leads with the tags the search asked for, so that a post matching
+    // on a name the site lists late still shows why it is here.
+    const asked = [...spelled.required, ...spelled.alternatives];
+    const posts = data.posts.map((post) => toPostOut(post, asked));
     // A truncated list passed off as whole is the one thing this saving must
     // not cost, so the answer says where the rest of the tags are.
     const trimmed = posts.filter((post) => post.tags_total > post.tags.length).length;
@@ -220,7 +258,26 @@ export async function runSearchPosts(
       );
     }
     // The site counts every match; this page carries at most `limit` of them.
-    const hasMore = args.page * args.limit < data.total;
+    const lastPage = lastPageOf(data.total, args.limit);
+    const hasMore = args.page < lastPage;
+    const nextPage = hasMore && args.page < MAX_PAGE ? args.page + 1 : null;
+
+    // Two silences a caller cannot tell apart from a failure. A page beyond the
+    // end serves nothing while the same answer states a total, and a search
+    // whose results outrun the page ceiling states that more remain while
+    // offering no page to ask for.
+    if (data.total > 0 && args.page > lastPage) {
+      notes.push(
+        `This search fills ${lastPage} page(s) at limit ${args.limit}, and page ${args.page} lies ` +
+          "past the end, so no post is served.",
+      );
+    }
+    if (hasMore && nextPage === null) {
+      notes.push(
+        `rule34.xxx holds more posts, and page ${MAX_PAGE} is as far as this tool reads. ` +
+          "Raise limit to carry more of them per page, or narrow the search.",
+      );
+    }
 
     if (data.total === 0) {
       notes.push(...(await explainEmptySearch(client, args)));
@@ -235,7 +292,7 @@ export async function runSearchPosts(
       page: args.page,
       posts,
       has_more: hasMore,
-      next_page: hasMore && args.page < MAX_PAGE ? args.page + 1 : null,
+      next_page: nextPage,
       source: "rule34.xxx" as const,
       notes,
     };
@@ -246,7 +303,7 @@ export async function runSearchPosts(
         : `${data.total.toLocaleString("en-US")} post(s) match ${query}. Page ${args.page}:`;
     const body = posts.length > 0 ? `\n${renderPostList(posts)}` : "";
 
-    return ok(structured, `${header}${body}${whatFollowsThisPage(hasMore, args.page)}`, notes);
+    return ok(structured, `${header}${body}${whatFollowsThisPage(nextPage)}`, notes);
   } catch (error) {
     return toToolError(error);
   }

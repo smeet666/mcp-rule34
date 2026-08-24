@@ -10,6 +10,7 @@ import { invalidInput } from "../errors.js";
 import type { MediaType, Rating, SortOrder } from "../types.js";
 
 export const API_URL = "https://api.rule34.xxx/index.php";
+export const SUGGEST_URL = "https://api.rule34.xxx/autocomplete.php";
 export const SITE_URL = "https://rule34.xxx/index.php";
 
 /** The site refuses more than this in one request, and caps silently below it. */
@@ -251,9 +252,28 @@ export function readPostPageUrl(raw: string): number {
     );
   }
 
-  const id = Number(parsed.searchParams.get("id"));
-  if (!Number.isInteger(id) || id < 1) {
+  // A query may carry `id` more than once, and reading the first would be a
+  // coin flip on which post the caller meant. Two different values are the
+  // contradiction an `id` and a `url` that disagree are refused for.
+  const named = [...new Set(parsed.searchParams.getAll("id"))];
+  if (named.length > 1) {
+    throw invalidInput(
+      `"${raw}" names ${named.length} different posts: ${named.join(", ")}.`,
+      "Pass a link to one post.",
+    );
+  }
+
+  const written = named[0] ?? "";
+  if (written === "") {
     throw invalidInput(`"${raw}" carries no post id.`);
+  }
+
+  const id = Number(written);
+  if (!Number.isInteger(id) || id < 1) {
+    throw invalidInput(
+      `"${raw}" carries '${written}', which is not a post id.`,
+      "A post id is a whole number from 1 upwards.",
+    );
   }
   return id;
 }
@@ -309,6 +329,20 @@ function credentialsQuery(credentials: Credentials): string {
     `&api_key=${encodeURIComponent(credentials.apiKey)}` +
     `&user_id=${encodeURIComponent(credentials.userId)}`
   );
+}
+
+/**
+ * Ask the site which tag names begin with a piece of text.
+ *
+ * rule34.xxx publishes this route on its API host and answers it without
+ * credentials, so none are sent. It matches from the start of a name and caps
+ * its answer at ten, both of which the tool that calls it has to state.
+ *
+ * An empty query is refused here: the site answers one with the tags it holds
+ * most of, which is an answer to a question nobody asked.
+ */
+export function buildTagSuggestUrl(text: string): string {
+  return `${SUGGEST_URL}?q=${encodeURIComponent(normalizeTag(text))}`;
 }
 
 export function buildPostPageUrl(id: number): string {

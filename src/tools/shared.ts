@@ -41,14 +41,34 @@ export const postSchema = z.object({
   tags: z.array(z.string()).describe("The first tags of the post, at most 12 of them."),
   tags_total: z.number().int().describe("How many tags the post carries in all."),
   source: z.string().nullable().describe("Whatever the uploader credited, when they credited any."),
-  created_at: z.string().nullable().describe("When the post was published, ISO 8601."),
+  created_at: z
+    .string()
+    .nullable()
+    .describe(
+      "When the post was added to rule34.xxx, ISO 8601. The site imported much of its older catalogue in bulk, so thousands of posts share one day.",
+    ),
   has_comments: z.boolean(),
   parent_id: z.number().int().nullable(),
 });
 
 export type PostOut = z.infer<typeof postSchema>;
 
-export function toPostOut(post: Rule34Post): PostOut {
+/**
+ * The tags a row shows: the ones the search asked for first, then the rest in
+ * the site's own order.
+ *
+ * A row that omits the very tag it matched on reads as an off-topic result, and
+ * the site lists a post's tags alphabetically often enough that a searched name
+ * falls outside the first twelve. Only names the post carries are lifted: a row
+ * states what the post holds, never what was asked for.
+ */
+function previewTags(tags: string[], asked: readonly string[]): string[] {
+  const carried = asked.filter((tag) => tags.includes(tag));
+  const rest = tags.filter((tag) => !carried.includes(tag));
+  return [...carried, ...rest].slice(0, TAG_PREVIEW);
+}
+
+export function toPostOut(post: Rule34Post, asked: readonly string[] = []): PostOut {
   return {
     id: post.id,
     post_url: post.postUrl,
@@ -59,7 +79,7 @@ export function toPostOut(post: Rule34Post): PostOut {
     height: post.height,
     score: post.score,
     rating: post.rating,
-    tags: post.tags.slice(0, TAG_PREVIEW),
+    tags: previewTags(post.tags, asked),
     tags_total: post.tags.length,
     source: post.source,
     created_at: post.createdAt,

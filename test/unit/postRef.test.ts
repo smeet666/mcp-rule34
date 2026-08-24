@@ -52,6 +52,40 @@ describe("readPostPageUrl", () => {
     );
   });
 
+  it("refuses a page naming two different posts", () => {
+    // A query carrying `id` twice names two posts, and reading the first is a
+    // coin flip on which one the caller meant. It is the contradiction an `id`
+    // and a `url` that disagree are refused for, arriving by another door.
+    expect(() =>
+      readPostPageUrl("https://rule34.xxx/index.php?page=post&s=view&id=1&id=2"),
+    ).toThrow(/invalid_input/);
+  });
+
+  it("accepts a page repeating the same id", () => {
+    // Repeating one id names one post, so nothing is ambiguous.
+    expect(readPostPageUrl("https://rule34.xxx/index.php?page=post&s=view&id=7&id=7")).toBe(7);
+  });
+
+  it("tells an id it cannot use apart from an id it cannot find", () => {
+    // "carries no post id" sends a caller looking for a missing parameter. A
+    // page carrying `id=-1` carries one; the value is what cannot be used.
+    let missing = "";
+    let outOfRange = "";
+    try {
+      readPostPageUrl("https://rule34.xxx/index.php?page=post&s=view&id=");
+    } catch (error) {
+      missing = (error as Error).message;
+    }
+    try {
+      readPostPageUrl("https://rule34.xxx/index.php?page=post&s=view&id=-1");
+    } catch (error) {
+      outOfRange = (error as Error).message;
+    }
+    expect(missing).toMatch(/no post id/i);
+    expect(outOfRange).not.toMatch(/no post id/i);
+    expect(outOfRange).toContain("-1");
+  });
+
   it("refuses a post page whose id is not a number", () => {
     expect(() => readPostPageUrl("https://rule34.xxx/index.php?page=post&s=view&id=abc")).toThrow(
       /invalid_input/,

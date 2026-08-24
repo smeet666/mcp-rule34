@@ -16,7 +16,8 @@ export const getPostDescription = [
   "Read one rule34.xxx post, named by its id or by a link to its page.",
   "Returns every tag the post carries, each with its kind (character, copyright, artist, general or",
   "metadata) and how many posts share it, alongside the image or video, the dimensions, the score,",
-  "the rating, the uploader, the number of comments, the credited source and the publication date.",
+  "the rating, the uploader, the number of comments, the credited source and the date the site",
+  "took the post in.",
   "Use this after a search, whose rows show only the first few tags of each post.",
 ].join(" ");
 
@@ -56,7 +57,12 @@ export const getPostOutputShape = {
   parent_id: z.number().int().nullable(),
   owner: z.string().nullable().describe("The account that uploaded the post."),
   comment_count: z.number().int().nullable(),
-  created_at: z.string().nullable().describe("When the post was published, ISO 8601."),
+  created_at: z
+    .string()
+    .nullable()
+    .describe(
+      "When the post was added to rule34.xxx, ISO 8601. The site imported much of its older catalogue in bulk, so thousands of posts share one day.",
+    ),
   changed_at: z.string().nullable().describe("When the post last changed, ISO 8601."),
   status: z.string(),
   has_notes: z.boolean(),
@@ -134,8 +140,8 @@ function render(post: {
     `  ${post.file_url}`,
   ];
 
-  const posted = post.created_at ? post.created_at.slice(0, 10) : "an unstated date";
-  lines.push(`  posted ${posted}${post.owner ? ` by ${post.owner}` : ""}`);
+  const added = post.created_at ? post.created_at.slice(0, 10) : "an unstated date";
+  lines.push(`  added to rule34.xxx ${added}${post.owner ? ` by ${post.owner}` : ""}`);
   if (post.comment_count !== null) {
     lines.push(`  ${post.comment_count} comment(s)`);
   }

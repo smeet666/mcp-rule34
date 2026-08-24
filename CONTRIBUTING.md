@@ -83,7 +83,7 @@ The API layer under `src/` never imports the MCP SDK, and the MCP layer never
 performs HTTP. That separation is why the client is published as its own
 subpath export and usable as a plain library, so please keep it.
 
-The tools are `search_posts` and `get_post`. A new tool is a bigger conversation
+The tools are `search_posts`, `get_post` and `find_tags`. A new tool is a bigger conversation
 than a new field on an existing one, which is another reason to open an issue
 first.
 

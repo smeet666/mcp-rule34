@@ -37,7 +37,13 @@ export interface Rule34Post {
   hasChildren: boolean;
   hasComments: boolean;
   hasNotes: boolean;
-  /** When the post was published, as the site printed it, in ISO 8601. */
+  /**
+   * When rule34.xxx took the post in, as the site printed it, in ISO 8601.
+   *
+   * The site imported much of its older catalogue in bulk, so thousands of
+   * posts carry one day in November 2010 rather than the day their subject was
+   * made or first published elsewhere.
+   */
   createdAt: string | null;
   /** Last change to the post, in Unix seconds. Retagging moves this, not the date above. */
   changedAtUnix: number | null;
@@ -75,7 +81,7 @@ export interface TagOnPost {
 /**
  * One post, read from both formats the API publishes.
  *
- * The publication date and the uploader's numeric id come from the XML; the
+ * The date the site took the post in and the uploader's numeric id come from the XML; the
  * uploader's name, the comment count and the tag types come from the JSON.
  */
 export interface PostDetail {
@@ -100,10 +106,25 @@ export interface PostDetail {
   status: string;
   hasNotes: boolean;
   changedAtUnix: number | null;
-  /** Only the XML route publishes this, so it is absent until both are read. */
+  /**
+   * When rule34.xxx took the post in. Only the XML route publishes it, so it is
+   * absent until both formats are read.
+   */
   createdAt?: string | null;
   /** Only the XML route publishes this. */
   creatorId?: number | null;
   hasComments?: boolean;
   hasChildren?: boolean;
+}
+
+/**
+ * A name rule34.xxx offers for a piece of text, with what it counts for it.
+ *
+ * The suggestion route matches from the start of a name, so a word sitting
+ * inside a tag finds nothing there.
+ */
+export interface TagSuggestion {
+  name: string;
+  /** Posts the site credits to the tag, or nothing when it printed no count. */
+  postCount: number | null;
 }

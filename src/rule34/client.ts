@@ -8,10 +8,11 @@
 
 import type { Config, Logger } from "../config.js";
 import { invalidInput } from "../errors.js";
-import type { PostDetail, PostList, TagRef } from "../types.js";
+import type { PostDetail, PostList, TagRef, TagSuggestion } from "../types.js";
 import { TtlLruCache } from "./cache.js";
 import { fetchXml } from "./http.js";
 import { parsePostDetail } from "./parsers/postDetail.js";
+import { parseTagSuggestions } from "./parsers/suggestions.js";
 import { parsePostList } from "./parsers/posts.js";
 import { parseTagList } from "./parsers/tags.js";
 import { RateLimiter } from "./rateLimiter.js";
@@ -20,6 +21,7 @@ import {
   buildPostByIdXmlUrl,
   buildPostSearchUrl,
   buildTagLookupUrl,
+  buildTagSuggestUrl,
   normalizeTag,
   type Credentials,
   type PostSearch,
@@ -91,6 +93,19 @@ export class Rule34Client {
       },
       cached: json.cached && xml.cached,
     };
+  }
+
+  /**
+   * The names rule34.xxx offers for a piece of text.
+   *
+   * This route needs no credentials, so none are required to call it: a server
+   * with no key configured can still tell a caller how a tag is spelled, which
+   * is the one useful thing it can do.
+   */
+  async findTags(text: string): Promise<Read<TagSuggestion[]>> {
+    const url = buildTagSuggestUrl(text);
+    const { body, cached } = await this.read(url);
+    return { data: parseTagSuggestions(body, url), cached };
   }
 
   /** The tag under this exact name, or nothing when the site holds no such tag. */
