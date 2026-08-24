@@ -37,15 +37,17 @@ then on a leaked npm token cannot push a release of this package.
 
 ## Every release after that
 
-1. Bump the version in **three** places, which must stay in step:
+1. Bump the version in **four** places, which must stay in step:
    - `package.json`
    - `server.json` (twice: the top-level `version` and the package `version`)
-   - `src/version.ts`, which feeds the User-Agent sent to rule34.xxx
+   - `packaging/manifest.json`, which the `.mcpb` bundle announces itself with
+   - `src/version.ts`, which feeds the User-Agent and the name the server
+     answers `initialize` with
 2. Update `CHANGELOG.md`.
 3. Commit, then tag and push:
 
 ```bash
-git tag v0.2.0
+git tag vX.Y.Z
 git push origin main --tags
 ```
 
