@@ -13,7 +13,7 @@ name: Live canary
 on:
   schedule:
     # 04:42 UTC, offset from the sibling project so the two do not run together.
-    - cron: "42 4 * * *"
+    - cron: "58 4 * * *"
   workflow_dispatch:
 
 # A single run at a time, so a slow night cannot overlap with the next one.
