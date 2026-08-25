@@ -8,6 +8,7 @@
  * it does.
  */
 
+import process from "node:process";
 import { describe, expect, it } from "vitest";
 import { createLogger, loadConfig } from "../../src/config.js";
 import { Rule34Client } from "../../src/rule34/client.js";
@@ -140,7 +141,7 @@ live("a search that reaches rule34.xxx", () => {
     const kinds = new Set(data.tagDetails.map((tag) => tag.type));
     console.log(`  kinds : ${[...kinds].sort().join(", ")}`);
 
-    expect(data.id).toBe(2195419);
+    expect(data.id).toBe(2_195_419);
     expect(data.createdAt).toMatch(/^2016-/);
     expect(data.owner).toBeTruthy();
     expect(data.commentCount).not.toBeNull();

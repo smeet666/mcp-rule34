@@ -40,7 +40,7 @@ describe("parsePostList", () => {
     // Reporting the number of rows as a total is how a search of a million
     // posts gets answered with "20".
     const list = parsePostList(ONE_POST, URL);
-    expect(list.total).toBe(1522047);
+    expect(list.total).toBe(1_522_047);
     expect(list.offset).toBe(0);
     expect(list.posts).toHaveLength(1);
   });
@@ -83,7 +83,7 @@ describe("parsePostList", () => {
 
   it("carries the numbers as numbers and the flags as flags", () => {
     const post = parsePostList(ONE_POST, URL).posts[0];
-    expect(post?.id).toBe(18540926);
+    expect(post?.id).toBe(18_540_926);
     expect(post?.width).toBe(1536);
     expect(post?.height).toBe(2016);
     expect(post?.score).toBe(12);
@@ -102,7 +102,7 @@ describe("parsePostList", () => {
       URL,
     ).posts[0];
     expect(post?.createdAt).toBe("2016-11-13T12:22:51.000Z");
-    expect(post?.changedAtUnix).toBe(1787514379);
+    expect(post?.changedAtUnix).toBe(1_787_514_379);
   });
 
   it("reads a date it cannot make sense of as unknown", () => {
