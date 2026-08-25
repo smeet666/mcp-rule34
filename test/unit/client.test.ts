@@ -19,7 +19,7 @@ function postsDocument(count: number, ids: number[]): string {
 
 const DETAIL_JSON = JSON.stringify([
   {
-    id: 2195419,
+    id: 2_195_419,
     width: 1920,
     height: 1350,
     score: 178,
@@ -27,14 +27,14 @@ const DETAIL_JSON = JSON.stringify([
     hash: "aaaa1111",
     file_url: "https://api-cdn.rule34.xxx/images/2027/aaaa1111.jpeg",
     tags: "black_hair",
-    tag_info: [{ count: 1597958, type: "tag", tag: "black_hair" }],
+    tag_info: [{ count: 1_597_958, type: "tag", tag: "black_hair" }],
     owner: "a_person",
     comment_count: 4,
     parent_id: 0,
     source: "",
     status: "active",
     has_notes: false,
-    change: 1741898933,
+    change: 1_741_898_933,
   },
 ]);
 
@@ -172,17 +172,17 @@ describe("Rule34Client", () => {
       [/json=1/, DETAIL_JSON],
       [/s=post/, DETAIL_XML],
     ]);
-    const read = await client(impl).getPost({ id: 2195419 });
+    const read = await client(impl).getPost({ id: 2_195_419 });
 
     expect(calls).toHaveLength(2);
     expect(read.data.owner).toBe("a_person");
     expect(read.data.commentCount).toBe(4);
     expect(read.data.createdAt).toBe("2016-11-13T12:22:51.000Z");
-    expect(read.data.creatorId).toBe(46501);
+    expect(read.data.creatorId).toBe(46_501);
     expect(read.data.tagDetails[0]).toEqual({
       name: "black_hair",
       type: "general",
-      postCount: 1597958,
+      postCount: 1_597_958,
     });
   });
 
@@ -194,7 +194,7 @@ describe("Rule34Client", () => {
     const read = await client(impl).getPost({
       url: "https://rule34.xxx/index.php?page=post&s=view&id=2195419&tags=black_hair",
     });
-    expect(read.data.id).toBe(2195419);
+    expect(read.data.id).toBe(2_195_419);
   });
 
   it("refuses to read a post before it has credentials", async () => {

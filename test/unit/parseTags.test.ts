@@ -13,7 +13,7 @@ describe("parseTagList", () => {
     const [tag] = parseTagList(ONE_TAG, URL);
     expect(tag?.name).toBe("black_hair");
     expect(tag?.id).toBe(49);
-    expect(tag?.postCount).toBe(1597958);
+    expect(tag?.postCount).toBe(1_597_958);
     expect(tag?.ambiguous).toBe(false);
   });
 

@@ -8,6 +8,7 @@
  * tools, and each call answers with what to set and where to get it.
  */
 
+import process from "node:process";
 import type { Credentials } from "./rule34/urls.js";
 import { PKG_VERSION, REPO_URL } from "./version.js";
 

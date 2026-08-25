@@ -12,7 +12,7 @@ const CREDENTIALS = { apiKey: "0123456789abcdef", userId: "6701429" };
 describe("readPostPageUrl", () => {
   it("reads the id out of a post page", () => {
     expect(readPostPageUrl("https://rule34.xxx/index.php?page=post&s=view&id=2195419")).toBe(
-      2195419,
+      2_195_419,
     );
   });
 
@@ -20,7 +20,7 @@ describe("readPostPageUrl", () => {
     // A link copied from a result page keeps the search that produced it.
     expect(
       readPostPageUrl("https://rule34.xxx/index.php?page=post&s=view&id=18540109&tags=black_hair"),
-    ).toBe(18540109);
+    ).toBe(18_540_109);
   });
 
   it("accepts the subdomains the site serves from", () => {
@@ -95,22 +95,22 @@ describe("readPostPageUrl", () => {
 
 describe("resolvePostRef", () => {
   it("takes an id on its own", () => {
-    expect(resolvePostRef({ id: 2195419 })).toBe(2195419);
+    expect(resolvePostRef({ id: 2_195_419 })).toBe(2_195_419);
   });
 
   it("takes a URL on its own", () => {
     expect(
       resolvePostRef({ url: "https://rule34.xxx/index.php?page=post&s=view&id=2195419" }),
-    ).toBe(2195419);
+    ).toBe(2_195_419);
   });
 
   it("accepts both when they agree", () => {
     expect(
       resolvePostRef({
-        id: 2195419,
+        id: 2_195_419,
         url: "https://rule34.xxx/index.php?page=post&s=view&id=2195419",
       }),
-    ).toBe(2195419);
+    ).toBe(2_195_419);
   });
 
   it("refuses both when they disagree", () => {
@@ -138,7 +138,7 @@ describe("resolvePostRef", () => {
 describe("the two addresses one post is read from", () => {
   it("asks the XML route for the fields only it carries", () => {
     // The publication date and the uploader's numeric id live here.
-    expect(buildPostByIdXmlUrl(2195419, CREDENTIALS)).toBe(
+    expect(buildPostByIdXmlUrl(2_195_419, CREDENTIALS)).toBe(
       "https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&id=2195419" +
         "&api_key=0123456789abcdef&user_id=6701429",
     );
@@ -146,7 +146,7 @@ describe("the two addresses one post is read from", () => {
 
   it("asks the JSON route for the fields only it carries", () => {
     // The uploader's name, the comment count, and a type for every tag.
-    expect(buildPostByIdJsonUrl(2195419, CREDENTIALS)).toBe(
+    expect(buildPostByIdJsonUrl(2_195_419, CREDENTIALS)).toBe(
       "https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&id=2195419" +
         "&json=1&fields=tag_info&api_key=0123456789abcdef&user_id=6701429",
     );

@@ -46,7 +46,7 @@ const LATE_TAG_POST =
 
 const DETAIL_JSON = JSON.stringify([
   {
-    id: 2195419,
+    id: 2_195_419,
     width: 1920,
     height: 1350,
     score: 178,
@@ -55,8 +55,8 @@ const DETAIL_JSON = JSON.stringify([
     file_url: "https://api-cdn.rule34.xxx/images/2027/aaaa1111.jpeg",
     tags: "black_hair asuka_langley_sohryu",
     tag_info: [
-      { count: 1597958, type: "tag", tag: "black_hair" },
-      { count: 18248, type: "character", tag: "asuka_langley_sohryu" },
+      { count: 1_597_958, type: "tag", tag: "black_hair" },
+      { count: 18_248, type: "character", tag: "asuka_langley_sohryu" },
     ],
     owner: "a_person",
     comment_count: 4,
@@ -64,7 +64,7 @@ const DETAIL_JSON = JSON.stringify([
     source: "",
     status: "active",
     has_notes: false,
-    change: 1741898933,
+    change: 1_741_898_933,
   },
 ]);
 
@@ -127,7 +127,7 @@ async function connect(fetchImpl: typeof fetch, env: NodeJS.ProcessEnv = CREDENT
 }
 
 const FOUND: [RegExp, StubRoute][] = [
-  [/s=post/, { body: postsDocument(1599409, [18540926, 18540927]) }],
+  [/s=post/, { body: postsDocument(1_599_409, [18_540_926, 18_540_927]) }],
   [/s=tag/, { body: KNOWN_TAG }],
 ];
 
@@ -173,7 +173,7 @@ describe("MCP tool contract", () => {
     const output = result.structuredContent as unknown as SearchOutput;
 
     expect(result.isError).toBeFalsy();
-    expect(output.total).toBe(1599409);
+    expect(output.total).toBe(1_599_409);
     expect(output.posts).toHaveLength(2);
     expect(output.page).toBe(1);
     expect(output.has_more).toBe(true);
@@ -431,7 +431,7 @@ describe("MCP tool contract", () => {
         [/s=post/, { body: DETAIL_XML }],
       ]),
     );
-    const result = await client.callTool({ name: "get_post", arguments: { id: 2195419 } });
+    const result = await client.callTool({ name: "get_post", arguments: { id: 2_195_419 } });
     const post = result.structuredContent as unknown as {
       id: number;
       owner: string | null;
@@ -441,13 +441,13 @@ describe("MCP tool contract", () => {
     };
 
     expect(result.isError).toBeFalsy();
-    expect(post.id).toBe(2195419);
+    expect(post.id).toBe(2_195_419);
     expect(post.owner).toBe("a_person");
     expect(post.comment_count).toBe(4);
     expect(post.created_at).toBe("2016-11-13T12:22:51.000Z");
     expect(post.tags).toEqual([
-      { name: "black_hair", type: "general", post_count: 1597958 },
-      { name: "asuka_langley_sohryu", type: "character", post_count: 18248 },
+      { name: "black_hair", type: "general", post_count: 1_597_958 },
+      { name: "asuka_langley_sohryu", type: "character", post_count: 18_248 },
     ]);
   });
 
@@ -465,7 +465,7 @@ describe("MCP tool contract", () => {
       },
     });
     expect(result.isError).toBeFalsy();
-    expect((result.structuredContent as { id: number }).id).toBe(2195419);
+    expect((result.structuredContent as { id: number }).id).toBe(2_195_419);
   });
 
   it("refuses an id and a URL that name different posts", async () => {
@@ -614,7 +614,9 @@ describe("MCP tool contract", () => {
     // At a limit of one, the page ceiling is reached long before the results
     // are. Stating that more remain and offering no next page is a pair of
     // fields that contradict each other unless the reason is given.
-    const client = await connect(stubFetch([[/s=post/, { body: postsDocument(247, [17543976]) }]]));
+    const client = await connect(
+      stubFetch([[/s=post/, { body: postsDocument(247, [17_543_976]) }]]),
+    );
     const result = await client.callTool({
       name: "search_posts",
       arguments: { tags: ["prince of tennis"], limit: 1, page: 200 },

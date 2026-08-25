@@ -247,7 +247,7 @@ describe("buildTagSuggestUrl", () => {
 
 describe("buildPostPageUrl", () => {
   it("points at the page a person can open, rather than the API", () => {
-    expect(buildPostPageUrl(18540926)).toBe(
+    expect(buildPostPageUrl(18_540_926)).toBe(
       "https://rule34.xxx/index.php?page=post&s=view&id=18540926",
     );
   });

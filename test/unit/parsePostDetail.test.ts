@@ -7,14 +7,14 @@ const URL = "https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&id=219541
 /** One post as the JSON route publishes it. Values are invented. */
 const ONE_POST = JSON.stringify([
   {
-    change: 1741898933,
+    change: 1_741_898_933,
     comment_count: 4,
     directory: 2027,
     file_url: "https://api-cdn.rule34.xxx/images/2027/aaaa1111.jpeg",
     has_notes: false,
     hash: "aaaa1111",
     height: 1350,
-    id: 2195419,
+    id: 2_195_419,
     image: "aaaa1111.jpeg",
     owner: "a_person",
     parent_id: 0,
@@ -27,10 +27,10 @@ const ONE_POST = JSON.stringify([
     status: "active",
     tags: "asuka_langley_sohryu black_hair neon_genesis_evangelion crossover",
     tag_info: [
-      { count: 18248, type: "character", tag: "asuka_langley_sohryu" },
-      { count: 1597958, type: "tag", tag: "black_hair" },
-      { count: 34625, type: "copyright", tag: "neon_genesis_evangelion" },
-      { count: 194847, type: "metadata", tag: "crossover" },
+      { count: 18_248, type: "character", tag: "asuka_langley_sohryu" },
+      { count: 1_597_958, type: "tag", tag: "black_hair" },
+      { count: 34_625, type: "copyright", tag: "neon_genesis_evangelion" },
+      { count: 194_847, type: "metadata", tag: "crossover" },
     ],
     width: 1920,
   },
@@ -40,39 +40,39 @@ describe("parsePostDetail", () => {
   it("reads what only this route carries", () => {
     // The uploader by name and the number of comments are the reason a single
     // post is read here rather than out of a search.
-    const post = parsePostDetail(ONE_POST, URL, 2195419);
+    const post = parsePostDetail(ONE_POST, URL, 2_195_419);
     expect(post.owner).toBe("a_person");
     expect(post.commentCount).toBe(4);
   });
 
   it("names the kind of every tag, and how many posts carry it", () => {
-    const post = parsePostDetail(ONE_POST, URL, 2195419);
+    const post = parsePostDetail(ONE_POST, URL, 2_195_419);
     expect(post.tagDetails).toEqual([
-      { name: "asuka_langley_sohryu", type: "character", postCount: 18248 },
-      { name: "black_hair", type: "general", postCount: 1597958 },
-      { name: "neon_genesis_evangelion", type: "copyright", postCount: 34625 },
-      { name: "crossover", type: "metadata", postCount: 194847 },
+      { name: "asuka_langley_sohryu", type: "character", postCount: 18_248 },
+      { name: "black_hair", type: "general", postCount: 1_597_958 },
+      { name: "neon_genesis_evangelion", type: "copyright", postCount: 34_625 },
+      { name: "crossover", type: "metadata", postCount: 194_847 },
     ]);
   });
 
   it("keeps a kind it does not know rather than guessing at it", () => {
     const odd = ONE_POST.replace('"type":"metadata"', '"type":"newthing"');
-    const post = parsePostDetail(odd, URL, 2195419);
+    const post = parsePostDetail(odd, URL, 2_195_419);
     expect(post.tagDetails.at(-1)?.type).toBe("newthing");
   });
 
   it("reads the absence of a parent as an absence", () => {
     // This route writes 0 where the XML writes an empty string, and 0 is a post
     // id that belongs to somebody else.
-    expect(parsePostDetail(ONE_POST, URL, 2195419).parentId).toBeNull();
+    expect(parsePostDetail(ONE_POST, URL, 2_195_419).parentId).toBeNull();
   });
 
   it("reads an uncredited source as an absence", () => {
-    expect(parsePostDetail(ONE_POST, URL, 2195419).source).toBeNull();
+    expect(parsePostDetail(ONE_POST, URL, 2_195_419).source).toBeNull();
   });
 
   it("carries the tags as a list as well as the details", () => {
-    expect(parsePostDetail(ONE_POST, URL, 2195419).tags).toEqual([
+    expect(parsePostDetail(ONE_POST, URL, 2_195_419).tags).toEqual([
       "asuka_langley_sohryu",
       "black_hair",
       "neon_genesis_evangelion",

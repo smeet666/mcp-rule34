@@ -15,9 +15,9 @@ describe("parseTagSuggestions", () => {
     // The site writes the count into the label it means to display; the value
     // is the name a search takes.
     expect(parseTagSuggestions(THREE, URL)).toEqual([
-      { name: "kimono", postCount: 55638 },
-      { name: "kimetsu_no_yaiba", postCount: 47140 },
-      { name: "kim_possible", postCount: 21600 },
+      { name: "kimono", postCount: 55_638 },
+      { name: "kimetsu_no_yaiba", postCount: 47_140 },
+      { name: "kim_possible", postCount: 21_600 },
     ]);
   });
 
@@ -36,7 +36,7 @@ describe("parseTagSuggestions", () => {
 
   it("drops an entry carrying no name rather than inventing one", () => {
     const odd = JSON.stringify([{ label: "(12)" }, { label: "kimono (55638)", value: "kimono" }]);
-    expect(parseTagSuggestions(odd, URL)).toEqual([{ name: "kimono", postCount: 55638 }]);
+    expect(parseTagSuggestions(odd, URL)).toEqual([{ name: "kimono", postCount: 55_638 }]);
   });
 
   it("refuses an answer that is not this route's document", () => {
