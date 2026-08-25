@@ -101,10 +101,10 @@ export interface SearchPostsArgs {
 function toSearch(args: SearchPostsArgs): PostSearch {
   return {
     tags: args.tags,
-    anyOf: args.any_of,
-    exclude: args.exclude,
+    ...(args.any_of ? { anyOf: args.any_of } : {}),
+    ...(args.exclude ? { exclude: args.exclude } : {}),
     mediaType: args.media_type,
-    rating: args.rating,
+    ...(args.rating ? { rating: args.rating } : {}),
     sort: args.sort,
     limit: args.limit,
     page: args.page,

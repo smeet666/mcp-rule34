@@ -169,7 +169,7 @@ export class Rule34Client {
       config: this.deps.config,
       limiter: this.limiter,
       logger: this.deps.logger,
-      fetchImpl: this.deps.fetchImpl,
+      ...(this.deps.fetchImpl ? { fetchImpl: this.deps.fetchImpl } : {}),
     });
     this.cache.set(key, body);
     return { body, cached: false };
