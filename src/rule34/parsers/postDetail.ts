@@ -12,6 +12,10 @@ import type { PostDetail, TagOnPost } from "../../types.js";
 import { buildPostPageUrl, redactCredentials } from "../urls.js";
 
 /** The words this route writes where the tag route writes a number. */
+/** The word the site puts in the answer it gives an unauthenticated request. */
+const AUTHENTICATION = /authenticat/i;
+const WHITESPACE = /\s+/;
+
 const TYPES: Record<string, string> = {
   tag: "general",
   artist: "artist",
@@ -46,7 +50,7 @@ export function parsePostDetail(body: string, url: string, id: number): PostDeta
   // An unauthenticated request is answered with HTTP 200 and a bare string,
   // which is a fault in the caller's configuration rather than in the site.
   if (typeof parsed === "string") {
-    if (/authenticat/i.test(parsed)) {
+    if (AUTHENTICATION.test(parsed)) {
       throw missingCredentials(safeUrl);
     }
     throw upstreamFailure(safeUrl, parsed);
@@ -69,7 +73,7 @@ export function parsePostDetail(body: string, url: string, id: number): PostDeta
 function readPost(raw: Record<string, unknown>, askedFor: number): PostDetail {
   const id = readInteger(raw.id) ?? askedFor;
   const tags = readString(raw.tags)
-    .split(/\s+/)
+    .split(WHITESPACE)
     .filter((tag) => tag !== "");
 
   return {

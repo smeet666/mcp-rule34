@@ -14,6 +14,8 @@ import { buildPostPageUrl, redactCredentials } from "../urls.js";
 import { type Attributes, readDocument, readInteger, readText, toArray } from "./document.js";
 
 /** The letters this route writes where the site writes a word. */
+const WHITESPACE = /\s+/;
+
 const RATINGS: Record<string, string> = {
   e: "explicit",
   q: "questionable",
@@ -59,7 +61,7 @@ function readPost(attributes: Attributes): Rule34Post {
     // An unknown letter is carried as it came: naming it would state a rating
     // the site never wrote.
     rating: RATINGS[rating] ?? rating,
-    tags: (attributes["@_tags"] ?? "").split(/\s+/).filter((tag) => tag !== ""),
+    tags: (attributes["@_tags"] ?? "").split(WHITESPACE).filter((tag) => tag !== ""),
     source: readText(attributes["@_source"]),
     // The attribute is present and empty on a post with no parent, and 0 is a
     // post id that belongs to somebody else.

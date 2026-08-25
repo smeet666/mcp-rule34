@@ -10,6 +10,9 @@
 import { XMLParser } from "fast-xml-parser";
 import { missingCredentials, parseFailure, upstreamFailure } from "../../errors.js";
 
+/** The word the site puts in the error it answers an unauthenticated request with. */
+const AUTHENTICATION = /authenticat/i;
+
 export type Attributes = Record<string, string | undefined>;
 
 const parser = new XMLParser({
@@ -42,7 +45,7 @@ export function readDocument(xml: string, safeUrl: string): Record<string, unkno
   if (failure !== undefined) {
     const message = typeof failure === "string" ? failure : String(failure);
     // A fault in the caller's configuration rather than in the site.
-    if (/authenticat/i.test(message)) {
+    if (AUTHENTICATION.test(message)) {
       throw missingCredentials(safeUrl);
     }
     throw upstreamFailure(safeUrl, message);
