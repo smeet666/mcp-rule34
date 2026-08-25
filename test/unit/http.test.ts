@@ -30,7 +30,7 @@ function scriptedFetch(answers: Answer[]) {
     }
     return new Response(answer.body ?? OK_BODY, {
       status: answer.status ?? 200,
-      headers: answer.headers,
+      ...(answer.headers ? { headers: answer.headers } : {}),
     });
   }) as unknown as typeof fetch;
   return { impl, calls };
