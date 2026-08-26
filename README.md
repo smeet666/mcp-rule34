@@ -42,6 +42,36 @@ claude mcp add rule34 --env RULE34_USER_ID=your-id --env RULE34_API_KEY=your-key
 }
 ```
 
+### With Docker
+
+```json
+{
+  "mcpServers": {
+    "rule34": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "RULE34_USER_ID",
+        "-e",
+        "RULE34_API_KEY",
+        "ghcr.io/smeet666/mcp-rule34:2.0.0"
+      ],
+      "env": {
+        "RULE34_USER_ID": "your-key",
+        "RULE34_API_KEY": "your-key"
+      }
+    }
+  }
+}
+```
+
+`-i` keeps stdin open, which is where the protocol travels, and no `-t` is
+passed: a TTY rewrites the stream and breaks it. The container needs outbound
+HTTPS to `rule34.xxx` and `api.rule34.xxx`, and nothing else: no volume, no port, and the keys travel through the environment rather than inside the image.
+
 Put this in your **user** configuration rather than in a project file: a
 `.mcp.json` at the root of a repository travels with the repository, and the key
 travels with it.
@@ -261,6 +291,37 @@ claude mcp add rule34 --env RULE34_USER_ID=votre-id --env RULE34_API_KEY=votre-c
   }
 }
 ```
+
+### Avec Docker
+
+```json
+{
+  "mcpServers": {
+    "rule34": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "RULE34_USER_ID",
+        "-e",
+        "RULE34_API_KEY",
+        "ghcr.io/smeet666/mcp-rule34:2.0.0"
+      ],
+      "env": {
+        "RULE34_USER_ID": "your-key",
+        "RULE34_API_KEY": "your-key"
+      }
+    }
+  }
+}
+```
+
+`-i` garde l'entrée standard ouverte, qui est le canal du protocole, et aucun
+`-t` n'est passé : un terminal réécrit le flux et le casse. Le conteneur a besoin
+d'un accès HTTPS sortant vers `rule34.xxx` et `api.rule34.xxx`, et de rien d'autre :
+aucun volume, aucun port, et les clés voyagent par l'environnement plutôt que dans l'image.
 
 À placer dans votre configuration **utilisateur** plutôt que dans un fichier de
 projet : un `.mcp.json` à la racine d'un dépôt part avec le dépôt, et la clé
