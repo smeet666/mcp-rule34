@@ -51,6 +51,14 @@
           "isRequired": false
         }
       ]
+    },
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/smeet666/mcp-rule34/releases/download/v2.0.0/mcp-rule34-2.0.0.mcpb",
+      "version": "2.0.0",
+      "transport": {
+        "type": "stdio"
+      }
     }
   ]
 }
