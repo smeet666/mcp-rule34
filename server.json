@@ -19,12 +19,12 @@
     "url": "https://github.com/smeet666/mcp-rule34",
     "source": "github"
   },
-  "version": "2.0.1",
+  "version": "2.0.2",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "mcp-rule34",
-      "version": "2.0.1",
+      "version": "2.0.2",
       "transport": {
         "type": "stdio"
       },
@@ -54,8 +54,8 @@
     },
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/smeet666/mcp-rule34/releases/download/v2.0.1/mcp-rule34-2.0.1.mcpb",
-      "version": "2.0.1",
+      "identifier": "https://github.com/smeet666/mcp-rule34/releases/download/v2.0.2/mcp-rule34-2.0.2.mcpb",
+      "version": "2.0.2",
       "transport": {
         "type": "stdio"
       }
