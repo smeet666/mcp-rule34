@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.0.2
+
+- **The lowest version of `fast-xml-parser` this package accepts carries no
+  known advisory.** The published archive holds no lockfile, so a consumer
+  resolves the dependencies from the declared ranges, and the floor of a range
+  states which versions the package accepts to run.
+- **A gate audits those floors.** `npm run audit:floors` resolves every range to
+  its lowest published match, builds a tree from those and audits it, which is
+  what an audit of the installed tree cannot report.
+
 ## 2.0.1
 
 - **Every tool is documented, with its arguments and what its answer carries.**
