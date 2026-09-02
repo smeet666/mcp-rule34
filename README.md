@@ -3,6 +3,7 @@
 [![npm](https://img.shields.io/npm/v/mcp-rule34.svg)](https://www.npmjs.com/package/mcp-rule34)
 [![CI](https://github.com/smeet666/mcp-rule34/actions/workflows/ci.yml/badge.svg)](https://github.com/smeet666/mcp-rule34/actions/workflows/ci.yml)
 [![license](https://img.shields.io/npm/l/mcp-rule34.svg)](./LICENSE)
+[![LobeHub](https://lobehub.com/badge/mcp/smeet666-mcp-rule34)](https://lobehub.com/mcp/smeet666-mcp-rule34)
 
 [rule34.xxx](https://rule34.xxx) is a large image board whose posts are indexed
 entirely by tags, and it publishes an API for reading them. A post carries its
