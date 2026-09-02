@@ -1,0 +1,622 @@
+{
+  "author": "Damien Bouissou",
+  "authorUrl": "https://github.com/smeet666",
+  "description": "MCP server for rule34.xxx. Search posts by tag through the site's own API.",
+  "homepage": "https://github.com/smeet666/mcp-rule34#readme",
+  "identifier": "smeet666-mcp-rule34",
+  "name": "mcp-rule34",
+  "prompts": [],
+  "resources": [],
+  "tags": [
+    "mcp",
+    "modelcontextprotocol",
+    "model-context-protocol",
+    "mcp-server",
+    "rule34",
+    "booru",
+    "tags",
+    "images",
+    "search",
+    "claude",
+    "cursor",
+    "llm",
+    "ai"
+  ],
+  "tools": [
+    {
+      "name": "search_posts",
+      "title": "Search posts by tag",
+      "description": "Search rule34.xxx for posts carrying a tag, or several tags at once. Tags are written as one token, so a name said as words is joined by underscores: 'asuka langley sohryu' and 'ranma 1/2' are single tags, and this tool joins them for you. Returns each post's page, its image or video URL, dimensions, score and rating, alongside the number of posts the whole search matches. A row shows the first 12 of a post's tags and says how many it has; call get_post for the whole list with a kind for every tag. Use 'media_type' to ask for still images, animations or video; the site classifies these itself. When a search finds nothing, the answer names the tags rule34.xxx does not hold, or says how many posts the tags match once the restrictions are dropped.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "tags": {
+            "minItems": 1,
+            "maxItems": 10,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "description": "Tags a post must all carry, such as ['asuka langley sohryu', 'black hair']."
+          },
+          "any_of": {
+            "description": "Tags a post must carry at least one of.",
+            "minItems": 1,
+            "maxItems": 10,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          "exclude": {
+            "description": "Tags a post must not carry, such as ['monochrome'] to leave out black and white.",
+            "minItems": 1,
+            "maxItems": 10,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          "media_type": {
+            "default": "any",
+            "description": "'image' for stills, 'animated' for GIFs, 'video' for MP4. The site states this in its own tags, so the classification is as good as the tagging.",
+            "type": "string",
+            "enum": ["image", "animated", "video", "any"]
+          },
+          "rating": {
+            "description": "The two ratings rule34.xxx holds. Leave unset to search both.",
+            "type": "string",
+            "enum": ["questionable", "explicit"]
+          },
+          "sort": {
+            "default": "score",
+            "description": "'score' is the site's own tally of votes, recomputed once a day. 'id' is newest first. 'updated' is by when a post last changed, which retagging moves. 'random' draws a different set on each call.",
+            "type": "string",
+            "enum": ["score", "id", "updated", "random"]
+          },
+          "limit": {
+            "default": 20,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "page": {
+            "default": 1,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          }
+        },
+        "required": ["tags"],
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The required tags, as rule34.xxx spells them."
+          },
+          "any_of": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The alternatives, as rule34.xxx spells them."
+          },
+          "exclude": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The excluded tags, as rule34.xxx spells them."
+          },
+          "query": {
+            "type": "string",
+            "description": "The search as it was sent, in the site's own language."
+          },
+          "total": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Posts the whole search matches, as counted by the site."
+          },
+          "page": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "posts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "post_url": {
+                  "type": "string",
+                  "description": "The rule34.xxx page for this post."
+                },
+                "file_url": {
+                  "type": "string",
+                  "description": "The image or video itself, on the site's CDN."
+                },
+                "preview_url": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Thumbnail, when the site published one."
+                },
+                "sample_url": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Reduced copy, when the site published one."
+                },
+                "width": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "height": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "score": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991,
+                  "description": "The site's own score, updated once a day."
+                },
+                "rating": {
+                  "type": "string",
+                  "description": "As the site holds it: 'explicit' or 'questionable'."
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The first tags of the post, at most 12 of them."
+                },
+                "tags_total": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991,
+                  "description": "How many tags the post carries in all."
+                },
+                "source": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Whatever the uploader credited, when they credited any."
+                },
+                "created_at": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "When the post was added to rule34.xxx, ISO 8601. The site imported much of its older catalogue in bulk, so thousands of posts share one day."
+                },
+                "has_comments": {
+                  "type": "boolean"
+                },
+                "parent_id": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "post_url",
+                "file_url",
+                "preview_url",
+                "sample_url",
+                "width",
+                "height",
+                "score",
+                "rating",
+                "tags",
+                "tags_total",
+                "source",
+                "created_at",
+                "has_comments",
+                "parent_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "next_page": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source": {
+            "type": "string",
+            "const": "rule34.xxx"
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "tags",
+          "any_of",
+          "exclude",
+          "query",
+          "total",
+          "page",
+          "posts",
+          "has_more",
+          "next_page",
+          "source",
+          "notes"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_post",
+      "title": "Read one post",
+      "description": "Read one rule34.xxx post, named by its id or by a link to its page. Returns every tag the post carries, each with its kind (character, copyright, artist, general or metadata) and how many posts share it, alongside the image or video, the dimensions, the score, the rating, the uploader, the number of comments, the credited source and the date the site took the post in. Use this after a search, whose rows show only the first few tags of each post.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "The post's numeric id, as a search returns it.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "url": {
+            "description": "A link to the post's page, such as https://rule34.xxx/index.php?page=post&s=view&id=2195419. The link is read rather than followed.",
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "post_url": {
+            "type": "string"
+          },
+          "file_url": {
+            "type": "string"
+          },
+          "preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sample_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "width": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "height": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "md5": {
+            "type": "string"
+          },
+          "score": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "The site's own score, updated once a day."
+          },
+          "rating": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "character, copyright, artist, general or metadata."
+                },
+                "post_count": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991,
+                  "description": "Posts the site credits to this tag."
+                }
+              },
+              "required": ["name", "type", "post_count"],
+              "additionalProperties": false
+            }
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "owner": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The account that uploaded the post."
+          },
+          "comment_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When the post was added to rule34.xxx, ISO 8601. The site imported much of its older catalogue in bulk, so thousands of posts share one day."
+          },
+          "changed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When the post last changed, ISO 8601."
+          },
+          "status": {
+            "type": "string"
+          },
+          "has_notes": {
+            "type": "boolean"
+          },
+          "source_site": {
+            "type": "string",
+            "const": "rule34.xxx"
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "post_url",
+          "file_url",
+          "preview_url",
+          "sample_url",
+          "width",
+          "height",
+          "md5",
+          "score",
+          "rating",
+          "tags",
+          "source",
+          "parent_id",
+          "owner",
+          "comment_count",
+          "created_at",
+          "changed_at",
+          "status",
+          "has_notes",
+          "source_site",
+          "notes"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "find_tags",
+      "title": "Find how a tag is spelled",
+      "description": "Find how rule34.xxx spells a tag, and how many posts carry it. The site matches from the start of a name, so 'kimagure' finds 'kimagure_orange_road' while 'orange road' finds nothing. It offers at most ten names. Use this before searching when a name might be spelled differently, and after a search that found nothing because a tag does not exist.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "The start of a tag name, such as 'kimagure' or 'prince of tennis'. Spaces are joined with underscores."
+          }
+        },
+        "required": ["query"],
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The text as rule34.xxx would spell it."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name a search takes."
+                },
+                "post_count": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Posts the site credits to it, or nothing when it printed no count."
+                }
+              },
+              "required": ["name", "post_count"],
+              "additionalProperties": false
+            }
+          },
+          "source": {
+            "type": "string",
+            "const": "rule34.xxx"
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["query", "tags", "source", "notes"],
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    }
+  ],
+  "version": "2.0.2"
+}
