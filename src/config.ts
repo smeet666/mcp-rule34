@@ -4,7 +4,7 @@
  * A bad value never stops the process: a server that dies at startup because of
  * a typo in a client configuration file is very hard to diagnose from the host
  * application, so an invalid value is clamped and reported on stderr. Missing
- * credentials are handled the same way — the server starts, publishes its
+ * credentials are handled the same way: the server starts, publishes its
  * tools, and each call answers with what to set and where to get it.
  */
 

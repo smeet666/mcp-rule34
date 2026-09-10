@@ -123,7 +123,7 @@ export interface NormalizedTags {
  * The three lists as rule34.xxx spells them.
  *
  * An answer states the tags it searched for, and taking them back out of the
- * query string would state the site's grammar — its braces and its tilde — as
+ * query string would state the site's grammar (its braces and its tilde) as
  * though they were tags.
  */
 export function normalizeSearch(search: PostSearch): NormalizedTags {
