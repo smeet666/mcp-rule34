@@ -3,7 +3,7 @@
  *
  * This route is read as XML rather than as JSON for one reason: the XML states
  * the total and states an empty result as `count="0"`, where the JSON answers a
- * search that found nothing with an empty body — the same zero bytes a
+ * search that found nothing with an empty body, the same zero bytes a
  * truncated read produces. A total that cannot be read is unknown here, never
  * zero.
  */

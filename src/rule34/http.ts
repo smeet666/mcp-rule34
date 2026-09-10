@@ -5,7 +5,7 @@
  * that asks too often with HTTP 429, and it answers a request carrying no valid
  * credentials with HTTP 200 and an error document. So a status of 200 is not
  * proof of an answer, and a refusal must never reach a caller as an empty
- * result — the document itself is classified further up, by the parser.
+ * result. The document itself is classified further up, by the parser.
  */
 
 import type { Config, Logger } from "../config.js";
