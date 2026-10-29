@@ -139,7 +139,7 @@ live("a search that reaches rule34.xxx", () => {
     console.log(`\nPost ${data.id}: ${data.tagDetails.length} tags, posted ${data.createdAt}`);
     console.log(`  uploader ${data.owner}, ${data.commentCount} comment(s)`);
     const kinds = new Set(data.tagDetails.map((tag) => tag.type));
-    console.log(`  kinds : ${[...kinds].sort().join(", ")}`);
+    console.log(`  kinds : ${[...kinds].sort((a, b) => Number(a > b) - Number(a < b)).join(", ")}`);
 
     expect(data.id).toBe(2_195_419);
     expect(data.createdAt).toMatch(/^2016-/);
