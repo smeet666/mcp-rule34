@@ -64,7 +64,7 @@ under [Configuration](#configuration) is optional.
         "RULE34_USER_ID",
         "-e",
         "RULE34_API_KEY",
-        "ghcr.io/smeet666/mcp-rule34:2.0.2"
+        "ghcr.io/smeet666/mcp-rule34:2.1.0"
       ]
     }
   }
@@ -78,7 +78,7 @@ no volume, no port.
 
 ### Bundle, without npm
 
-Download `mcp-rule34-2.0.2.mcpb` from
+Download `mcp-rule34-2.1.0.mcpb` from
 [the latest release](https://github.com/smeet666/mcp-rule34/releases/latest) and
 open it. A client that supports MCP bundles installs it on its own, with no npm
 to run. The credentials are still set in the client's configuration.
@@ -330,7 +330,7 @@ tout le reste, sous [Configuration](#configuration-1), est facultatif.
         "RULE34_USER_ID",
         "-e",
         "RULE34_API_KEY",
-        "ghcr.io/smeet666/mcp-rule34:2.0.2"
+        "ghcr.io/smeet666/mcp-rule34:2.1.0"
       ]
     }
   }
@@ -344,7 +344,7 @@ votre environnement : aucun volume, aucun port.
 
 ### Bundle, sans npm
 
-Téléchargez `mcp-rule34-2.0.2.mcpb` depuis
+Téléchargez `mcp-rule34-2.1.0.mcpb` depuis
 [la dernière publication](https://github.com/smeet666/mcp-rule34/releases/latest)
 et ouvrez-le. Un client qui gère les bundles MCP l'installe seul, sans npm à
 lancer. Les identifiants se posent toujours dans la configuration du client.

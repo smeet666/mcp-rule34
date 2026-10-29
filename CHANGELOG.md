@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.1.0
+
+- **Node.js 24.22.1 or later**, inside the Node.js 24 line. The package, the
+  extension manifest and the image all declare it.
+- **zod `^4.6.7`.** Below 4.6.6, zod can exhaust memory while
+  validating oversized constrained collections, and the range accepts none of
+  those versions.
+- **Dependency floors:** `@modelcontextprotocol/sdk` `^1.32.2`, `fast-xml-parser` `^5.11.2`.
+
 ## 2.0.2
 
 - **The lowest version of `fast-xml-parser` this package accepts carries no
